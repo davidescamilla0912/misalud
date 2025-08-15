@@ -1,0 +1,37 @@
+# =============================================
+# Archivo: public/.htaccess
+# Descripción: Configuración de Apache para el sistema
+# Funciones:
+#   - Manejo de rutas y redirecciones
+#   - Protección de archivos sensibles
+#   - Prevención de listado de directorios
+#   - Configuración de seguridad básica
+# =============================================
+
+RewriteEngine On
+RewriteBase /
+
+# Redirigir todo el tráfico a HTTPS (descomentar en producción)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Si el archivo o directorio no existe, redirigir a index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Proteger archivos sensibles
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Prevenir listado de directorios
+Options -Indexes
+
+# Proteger contra ataques XSS y otros
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+</IfModule> 
